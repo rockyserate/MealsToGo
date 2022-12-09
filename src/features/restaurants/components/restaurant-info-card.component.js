@@ -37,8 +37,8 @@ export const RestaurantInfoCard = ({ restaurant = {} }) => {
           <Spacer size={spacing.xs} />
           <Section>
             <Rating>
-              {ratingArray.map(() => (
-                <SvgXml xml={star} width={20} height={20} />
+              {ratingArray.map((item, index) => (
+                <SvgXml xml={star} width={20} height={20} key={index} />
               ))}
             </Rating>
             <OpenIndicator>
