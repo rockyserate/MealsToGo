@@ -1,10 +1,8 @@
-import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import React from "react";
-import { RestaurantsScreen } from "./src/features/restaurants/screens/restaurants.screens";
-import { ThemeProvider } from "styled-components/native";
-import { theme } from "./src/infrastructure/theme";
-import { View, Text } from "react-native";
+import RestaurantsScreen from "./src/features/restaurants/screens/restaurants.screens";
+import { View, Text, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "./src/infrastructure/theme/colors";
@@ -33,35 +31,54 @@ function SettingsScreen() {
   );
 }
 
-function RestaurantListScreen() {
-  const [manropeLoaded] = useManrope({
-    Manrope_800ExtraBold,
-  });
-  const [interLoaded] = useInter({
-    Inter_400Regular,
-  });
-
-  if (!manropeLoaded || !interLoaded) {
-    return null;
-  }
-
+function DetailsScreen() {
   return (
-    <>
-      <ThemeProvider theme={theme}>
-        <RestaurantsScreen />
-        <ExpoStatusBar style="auto" />
-      </ThemeProvider>
-    </>
+    <View>
+      <Text>Details!</Text>
+    </View>
+  );
+}
+
+const TheLogo = () => {
+  return (
+    <Image
+      source={require("./assets/reco-logo.png")}
+      resizeMode="contain"
+      style={{
+        width: 64,
+        height: 24,
+      }}
+    />
+  );
+};
+
+const TheIcon = () => <Ionicons name="search" size={24} color="black" />;
+
+const RestaurantsStack = createNativeStackNavigator();
+
+function RestaurantsStackScreen() {
+  return (
+    <RestaurantsStack.Navigator
+      screenOptions={{
+        headerTitle: null,
+      }}
+    >
+      <RestaurantsStack.Screen
+        name="Restaurant List"
+        component={RestaurantsScreen}
+        options={{
+          title: "",
+          headerLeft: TheLogo,
+          headerRight: TheIcon,
+        }}
+      />
+      <RestaurantsStack.Screen name="Details" component={DetailsScreen} />
+    </RestaurantsStack.Navigator>
   );
 }
 
 const Tab = createBottomTabNavigator();
-
-const TAB_ICON = {
-  Restaurants: "restaurant",
-  Map: "map",
-  Settings: "settings",
-};
+const Stack = createNativeStackNavigator();
 
 const getTabBarIcon = (route, focused, color, size) => {
   let iconName;
@@ -84,6 +101,17 @@ const getTabBarIcon = (route, focused, color, size) => {
 };
 
 export default function App() {
+  const [manropeLoaded] = useManrope({
+    Manrope_800ExtraBold,
+  });
+  const [interLoaded] = useInter({
+    Inter_400Regular,
+  });
+
+  if (!manropeLoaded || !interLoaded) {
+    return null;
+  }
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -92,9 +120,10 @@ export default function App() {
             getTabBarIcon(route, focused, color, size),
           tabBarActiveTintColor: colors.ui.active,
           tabBarInactiveTintColor: colors.ui.inactive,
+          headerShown: false,
         })}
       >
-        <Tab.Screen name="Restaurants" component={RestaurantListScreen} />
+        <Tab.Screen name="Restaurants" component={RestaurantsStackScreen} />
         <Tab.Screen name="Map" component={MapScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
